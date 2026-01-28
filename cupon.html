@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon añadido aquí -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <title>Cupón Feria Online — Versión Profesional</title>
+  <style>
+    :root{
+      --bg1: #e3f2fd;
+      --accent: #1976d2;
+      --card-bg: #fff;
+      --success:#2e7d32;
+      --warning:#ef6c00;
+      --muted:#555;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 12px;
+      --maxw: 620px;
+    }
+    *{box-sizing:border-box}
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), #fff);
+      padding: 32px; margin:0; color:#1a237e;
+      -webkit-font-smoothing:antialiased;
+    }
+    .container{
+      background:var(--card-bg);
+      max-width:var(--maxw);
+      margin:0 auto; padding:28px; border-radius:16px;
+      box-shadow:var(--shadow); animation:fadeIn .36s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    h2{font-size:24px;margin:0 0 18px;color:var(--accent);text-align:center}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field-group{margin-bottom:14px}
+    label{display:block;margin-bottom:6px;font-weight:600;color:#333}
+    input[type=text], input[type=tel], input[type=number]{
+      width:100%;padding:10px 12px;border:1px solid #cfd8dc;border-radius:10px;font-size:15px
+    }
+    input[readonly]{background:#f5fbff}
+    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(25,118,210,0.12)}
+
+    .porcentajes{display:flex;gap:10px;margin-bottom:8px}
+    .porcentajes button{flex:1;padding:10px;border-radius:8px;border:1px solid #90caf9;background:#e3f2fd;cursor:pointer}
+    .porcentajes button.active{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.02)}
+
+    .nota{color:var(--muted);font-size:13px;margin:-4px 0 12px;font-style:italic}
+
+    .botones-pago{display:flex;gap:12px;margin-top:8px}
+    .botones-pago button{flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    #btnPagado{background:var(--success);color:#fff}
+    #btnPendiente{background:var(--warning);color:#fff}
+    .botones-pago button.active{box-shadow:0 6px 20px rgba(0,0,0,0.12);transform:scale(1.03)}
+
+    #copiarBtn{width:100%;padding:13px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:18px}
+
+    .resultado{margin-top:18px;padding:16px;background:#e8f1ff;border-radius:10px;border-left:6px solid var(--accent);white-space:pre-wrap;min-height:64px;color:#0d47a1;font-family:monospace;font-size:14.5px}
+
+    .helper{font-size:13px;color:#b71c1c;margin-top:6px;display:none}
+    .helper.show{display:block}
+
+    @media (max-width:640px){.grid{grid-template-columns:1fr}.container{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <h2>🎟️ Cupón Feria Online 🎟️</h2>
+
+    <div class="field-group">
+      <label for="oportunidad">Oportunidad (nombre del colegio) *</label>
+      <input id="oportunidad" type="text" placeholder="Ej.: Colegio San José" required />
+      <div id="errOportunidad" class="helper" role="alert">El nombre del colegio es obligatorio.</div>
+    </div>
+
+    <div class="grid">
+      <div class="field-group">
+        <label for="provincia">Provincia</label>
+        <input id="provincia" type="text" placeholder="Ej.: Alicante" />
+      </div>
+      <div class="field-group">
+        <label for="facturacion">Facturación total del centro (€)</label>
+        <input id="facturacion" type="number" min="0" step="0.01" placeholder="0,00" inputmode="decimal" />
+        <div id="errFacturacion" class="helper">Introduce una facturación válida mayor que 0.</div>
+      </div>
+    </div>
+
+    <div class="porcentajes" role="tablist" aria-label="Porcentaje del cupón">
+      <button type="button" id="btn5" aria-pressed="true">5 %</button>
+      <button type="button" id="btn10" aria-pressed="false">10 %</button>
+    </div>
+
+    <p class="nota">Al pulsar 5% o 10% se calcula el cupón <strong>sin IVA</strong>. El IVA por defecto es <strong>4%</strong>.</p>
+
+    <div class="field-group">
+      <label for="cupon_sin_iva">Cupón sin IVA</label>
+      <input id="cupon_sin_iva" type="text" readonly placeholder="Se calcula automáticamente" />
+    </div>
+
+    <div class="grid">
+      <div class="field-group">
+        <label for="telefono">Teléfono de contacto</label>
+        <input id="telefono" type="tel" placeholder="Ej.: +34 600 123 456" />
+      </div>
+      <div class="field-group">
+        <label for="nombre">Nombre del contacto</label>
+        <input id="nombre" type="text" placeholder="Ej.: María García" />
+      </div>
+    </div>
+
+    <div class="botones-pago" role="group" aria-label="Estado de canje">
+      <button type="button" id="btnPagado" aria-pressed="true">Se ha canjeado el cupón en la feria</button>
+      <button type="button" id="btnPendiente" aria-pressed="false">No se ha canjeado el cupón en la feria, hay que mandar la información</button>
+    </div>
+
+    <button id="copiarBtn">Copiar mensaje al portapapeles</button>
+
+    <div id="resultado" class="resultado" aria-live="polite"></div>
+  </div>
+
+  <script>
+    const el = id => document.getElementById(id);
+    const oportunidadInput = el('oportunidad');
+    const provinciaInput   = el('provincia');
+    const facturacionInput = el('facturacion');
+    const cuponSinIVA      = el('cupon_sin_iva');
+    const telefonoInput    = el('telefono');
+    const nombreInput      = el('nombre');
+    const resultadoDiv     = el('resultado');
+
+    const btn5         = el('btn5');
+    const btn10        = el('btn10');
+    const btnPagado    = el('btnPagado');
+    const btnPendiente = el('btnPendiente');
+    const copiarBtn    = el('copiarBtn');
+
+    const errOportunidad = el('errOportunidad');
+    const errFacturacion = el('errFacturacion');
+
+    const IVA = 0.04;
+    let estadoCanje = 'canjeado';
+    let porcentajeActivo = 5;
+
+    const fmt = value => {
+      if (value === '' || value === null || isNaN(Number(value))) return '0,00';
+      return new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(value));
+    };
+
+    function setActivePercent(p) {
+      porcentajeActivo = p;
+      btn5.classList.toggle('active', p === 5);
+      btn10.classList.toggle('active', p === 10);
+      btn5.setAttribute('aria-pressed', p === 5);
+      btn10.setAttribute('aria-pressed', p === 10);
+      calcularCupon();
+      actualizarVistaPrevia();
+    }
+
+    function setActiveCanje(p) {
+      estadoCanje = p;
+      btnPagado.classList.toggle('active', p === 'canjeado');
+      btnPendiente.classList.toggle('active', p === 'no_canjeado');
+      btnPagado.setAttribute('aria-pressed', p === 'canjeado');
+      btnPendiente.setAttribute('aria-pressed', p === 'no_canjeado');
+      actualizarVistaPrevia();
+    }
+
+    function calcularCupon() {
+      const fact = parseFloat(String(facturacionInput.value).replace(',', '.'));
+      if (isNaN(fact) || fact <= 0) {
+        cuponSinIVA.value = '';
+        return null;
+      }
+      const bruto = fact * (porcentajeActivo / 100);
+      const sinIva = bruto / (1 + IVA);
+      cuponSinIVA.value = fmt(sinIva);
+      return sinIva;
+    }
+
+    // MENSAJE FINAL SIN LA ÚLTIMA LÍNEA
+    function generarMensaje() {
+      const oportunidad = oportunidadInput.value.trim();
+      const provincia   = provinciaInput.value.trim();
+      const cupon       = cuponSinIVA.value || '0,00';
+      const telefono    = telefonoInput.value.trim();
+      const nombre      = nombreInput.value.trim();
+
+      let oportunidadCompleta = oportunidad || '—';
+      if (provincia) oportunidadCompleta += ` - ${provincia}`;
+
+      const contacto = nombre ? `${nombre} → ${telefono || '—'}` : (telefono || '—');
+
+      const cabecera = estadoCanje === 'canjeado'
+        ? '✅ CUPÓN CANJEADO ✅'
+        : '⚠️ CUPÓN PENDIENTE ⚠️';
+
+      const estadoDetalle = estadoCanje === 'canjeado'
+        ? 'Se ha canjeado el cupón en la feria'
+        : 'No se ha canjeado el cupón, pendiente de enviar datos';
+
+      return `${cabecera}
+${oportunidadCompleta}
+Importe: ${cupon} € sin IVA
+
+*Estado: ${estadoDetalle}*
+
+Contacto: ${contacto}`;
+    }
+
+    function actualizarVistaPrevia() {
+      resultadoDiv.textContent = generarMensaje();
+    }
+
+    function validaAntesDeCopiar() {
+      const nombreOK = oportunidadInput.value.trim().length > 0;
+      errOportunidad.classList.toggle('show', !nombreOK);
+
+      const fact = parseFloat(String(facturacionInput.value).replace(',', '.'));
+      const factOK = !isNaN(fact) && fact > 0;
+      errFacturacion.classList.toggle('show', !factOK);
+
+      return nombreOK && factOK;
+    }
+
+    async function copiarAlPortapapeles(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Eventos
+    btn5.addEventListener('click', () => setActivePercent(5));
+    btn10.addEventListener('click', () => setActivePercent(10));
+    btnPagado.addEventListener('click', () => setActiveCanje('canjeado'));
+    btnPendiente.addEventListener('click', () => setActiveCanje('no_canjeado'));
+
+    facturacionInput.addEventListener('input', () => {
+      if (facturacionInput.value.trim() === '') {
+        cuponSinIVA.value = '';
+      } else {
+        calcularCupon();
+      }
+      actualizarVistaPrevia();
+    });
+
+    [oportunidadInput, provinciaInput, telefonoInput, nombreInput].forEach(elm => {
+      elm.addEventListener('input', actualizarVistaPrevia);
+    });
+
+    copiarBtn.addEventListener('click', async () => {
+      if (!validaAntesDeCopiar()) return;
+
+      const mensaje = generarMensaje();
+      const ok = await copiarAlPortapapeles(mensaje);
+
+      if (ok) {
+        resultadoDiv.textContent = `¡Mensaje copiado al portapapeles!\n\n${mensaje}`;
+      } else {
+        resultadoDiv.textContent = mensaje;
+        alert('No se pudo copiar automáticamente. Selecciona y copia manualmente el texto de abajo.');
+      }
+    });
+
+    // Inicialización
+    btn5.classList.add('active');
+    btnPagado.classList.add('active');
+    actualizarVistaPrevia();
+  </script>
+  <button onclick="window.location.href='index.html'" style="margin: 40px auto; display: block; padding: 14px 32px; font-size: 1.2rem; font-weight: bold; color: white; background: #607d8b; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+    ← Volver al Menú
+  </button>
+</body>
+</html>

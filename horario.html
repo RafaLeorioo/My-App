@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Horas</title>
+
+    <style>
+        :root {
+            --bg1: #e3f2fd;
+            --accent: #1976d2;
+            --card-bg: #fff;
+            --shadow: 0 8px 30px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --maxw: 620px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg1), #fff);
+            margin: 0;
+            padding: 20px;
+            color: #1a237e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--maxw);
+            padding: 28px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        h2 {
+            color: var(--accent);
+            margin-bottom: 28px;
+            font-size: 2.3rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .bloque {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cfd8dc;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            background: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(25,118,210,0.12);
+        }
+
+        /* Botones inferiores */
+        .botones {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 14px 36px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(25,118,210,0.3);
+            transition: all 0.25s;
+        }
+
+        .btn:hover {
+            background: #1565c0;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(25,118,210,0.4);
+        }
+
+        .btn-volver {
+            background: #607d8b;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+        }
+
+        .btn-volver:hover {
+            background: #546e7a;
+        }
+
+        /* Preview captura */
+        #previewOverlay {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            display: none;
+            background: rgba(0,0,0,0.55);
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 95%;
+            max-height: 92%;
+        }
+
+        #previewBox {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+            max-height: calc(92vh - 40px);
+            overflow: auto;
+        }
+
+        #previewBox img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        #previewActions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tiny-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .tiny-btn:not(.secondary) {
+            background: linear-gradient(90deg, #6a82ab, #3b3f7a);
+        }
+
+        .tiny-btn.secondary {
+            background: linear-gradient(90deg, #3b7a3b, #6aa86a);
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 16px; }
+            .container { padding: 20px; }
+            h1 { font-size: 1.9rem; }
+            .btn { max-width: 300px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>⏰ Horario Feria ⏰</h2>
+
+    <div class="bloque">
+        <label>Inicio de Feria:</label>
+        <input type="time" id="inicioFeria" value="08:00">
+    </div>
+
+    <div class="bloque">
+        <label>Llegada al Colegio:</label>
+        <input type="text" id="llegadaColegio" readonly>
+    </div>
+
+    <div class="bloque">
+        <label>T. Trayecto</label>
+        <select id="salirViarTiempo">
+            <option value="5">5 m</option>
+            <option value="10">10 m</option>
+            <option value="15">15 m</option>
+            <option value="20">20 m</option>
+            <option value="30">30 m</option>
+            <option value="45">45 m</option>
+            <option value="60">1 h</option>
+            <option value="90">1 h 30 m</option>
+            <option value="120">2 h</option>
+            <option value="180">3 h</option>
+        </select>
+    </div>
+
+    <div class="bloque">
+        <label>Salir de Biar:</label>
+        <input type="text" id="salirViarResultado" readonly>
+    </div>
+
+    <div class="bloque">
+        <label>Me Despierto:</label>
+        <input type="text" id="meDespierto" readonly>
+    </div>
+
+    <div class="botones">
+        <button id="btnCaptura" class="btn">Capturar pantalla</button>
+    </div>
+
+    <div class="botones">
+        <button class="btn btn-volver" onclick="window.location.href='index.html'">
+            ← Volver al Menú
+        </button>
+    </div>
+</div>
+
+<!-- Preview -->
+<div id="previewOverlay">
+    <div id="previewBox">
+        <img id="previewImg">
+        <div id="previewActions">
+            <button id="btnGuardar" class="tiny-btn secondary">Guardar</button>
+            <button id="btnCerrarPreview" class="tiny-btn">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+function calcularHoras() {
+    let inicio = document.getElementById("inicioFeria").value.split(":");
+    let h = parseInt(inicio[0]), m = parseInt(inicio[1]);
+
+    let llegadaH = h - 1;
+    document.getElementById("llegadaColegio").value =
+        (llegadaH < 10 ? "0" : "") + llegadaH + ":" + (m < 10 ? "0" : "") + m;
+
+    let trayecto = parseInt(document.getElementById("salirViarTiempo").value);
+    let totalMin = llegadaH * 60 + m - trayecto;
+
+    let sh = Math.floor(totalMin / 60);
+    let sm = totalMin % 60;
+
+    document.getElementById("salirViarResultado").value =
+        (sh < 10 ? "0" : "") + sh + ":" + (sm < 10 ? "0" : "") + sm;
+
+    let despiertoMin = totalMin - 60;
+    let dh = Math.floor(despiertoMin / 60);
+    let dm = despiertoMin % 60;
+    if (dh < 0) dh += 24;
+
+    document.getElementById("meDespierto").value =
+        (dh < 10 ? "0" : "") + dh + ":" + (dm < 10 ? "0" : "") + dm;
+}
+
+document.getElementById("inicioFeria").addEventListener("change", calcularHoras);
+document.getElementById("salirViarTiempo").addEventListener("change", calcularHoras);
+calcularHoras();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>📝 Testimonio Educiona 📝</title>
+
+<style>
+:root{
+  --bg1:#e3f2fd;
+  --accent:#1976d2;
+  --success:#2e7d32;
+  --danger:#c62828;
+  --card-bg:#fff;
+  --shadow:0 8px 30px rgba(0,0,0,0.12);
+  --radius:16px;
+  --maxw:620px;
+}
+
+*{box-sizing:border-box}
+
+body{
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:linear-gradient(135deg,var(--bg1),#fff);
+  padding:32px;
+  margin:0;
+  color:#1a237e;
+}
+
+.container{
+  background:var(--card-bg);
+  max-width:var(--maxw);
+  margin:0 auto;
+  padding:28px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  animation:fadeIn .35s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
+
+h2{
+  font-size:24px;
+  margin-bottom:18px;
+  color:var(--accent);
+  text-align:center;
+}
+
+.field-group{margin-bottom:16px}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  color:#333;
+}
+
+input{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cfd8dc;
+  border-radius:10px;
+  font-size:15px;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(25,118,210,0.12);
+}
+
+.consent-buttons{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+}
+
+.consent-buttons button{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  font-size:15px;
+  color:#fff;
+}
+
+.btn-si{background:var(--success);}
+.btn-no{background:var(--danger);}
+
+.consent-buttons button.active{
+  box-shadow:0 6px 20px rgba(0,0,0,0.18);
+  transform:scale(1.03);
+}
+
+#copiarBtn{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:20px;
+}
+
+#limpiarBtn{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#90a4ae;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+/* PREVIEW MÁS COMPACTA */
+.preview{
+  margin-top:14px;
+  padding:12px;
+  background:#e8f1ff;
+  border-radius:12px;
+  border-left:5px solid var(--accent);
+  white-space:pre-wrap;
+  font-family:monospace;
+  font-size:14px;
+  color:#0d47a1;
+  min-height:70px;
+}
+
+.footer{
+  text-align:center;
+  font-size:13px;
+  color:#777;
+  margin-top:18px;
+}
+
+@media(max-width:640px){
+  body{padding:18px;}
+  .container{padding:20px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>📝 Testimonio Educiona 📝</h2>
+
+  <div class="field-group">
+    <label for="centro">Centro</label>
+    <input id="centro" type="text" placeholder="Nombre del centro" oninput="actualizarPreview()">
+  </div>
+
+  <div class="field-group">
+    <label for="nombre">Nombre de la persona</label>
+    <input id="nombre" type="text" placeholder="Nombre completo" oninput="actualizarPreview()">
+  </div>
+
+  <div class="field-group">
+    <label>Consentimiento</label>
+    <div class="consent-buttons">
+      <button class="btn-si" id="btnSi" onclick="setConsentimiento(true)">✅ Sí</button>
+      <button class="btn-no" id="btnNo" onclick="setConsentimiento(false)">❌ No</button>
+    </div>
+  </div>
+
+  <button id="copiarBtn" onclick="copiar()">📋 Copiar mensaje</button>
+  <button id="limpiarBtn" onclick="limpiar()">🧹 Limpiar</button>
+
+  <div class="preview" id="preview-text">
+    Empieza a escribir para ver el mensaje…
+  </div>
+
+  <div class="footer">Educiona · Uso interno</div>
+</div>
+
+<!-- BOTÓN VOLVER AL MENÚ -->
+<div style="width:100%; display:flex; justify-content:center; margin-top:32px;">
+  <button onclick="window.location.href='index.html'" 
+  style="padding:14px 32px; font-size:1.1rem; font-weight:700; color:white; background:#607d8b; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+  ← Volver al Menú
+  </button>
+</div>
+
+<script>
+const centro = document.getElementById('centro');
+const nombre = document.getElementById('nombre');
+const preview = document.getElementById('preview-text');
+const btnSi = document.getElementById('btnSi');
+const btnNo = document.getElementById('btnNo');
+
+let consentimiento = '';
+
+function setConsentimiento(valor){
+  consentimiento = valor ? '✅ Consentimiento' : '❌ Sin consentimiento';
+  btnSi.classList.toggle('active', valor);
+  btnNo.classList.toggle('active', !valor);
+  actualizarPreview();
+}
+
+function generarTexto(){
+  const c = centro.value.trim() || '—';
+  const n = nombre.value.trim() || '—';
+  return `Centro: ${c}
+Nombre: ${n}
+
+${consentimiento || '—'}`;
+}
+
+function actualizarPreview(){
+  preview.textContent = generarTexto();
+}
+
+function copiar(){
+  if(!consentimiento){
+    alert('Selecciona el consentimiento antes de copiar');
+    return;
+  }
+  navigator.clipboard.writeText(generarTexto())
+    .then(()=>alert('Mensaje copiado. Pégalo en WhatsApp 📲'))
+    .catch(()=>alert('No se pudo copiar'));
+}
+
+function limpiar(){
+  centro.value='';
+  nombre.value='';
+  consentimiento='';
+  btnSi.classList.remove('active');
+  btnNo.classList.remove('active');
+  preview.textContent='Empieza a escribir para ver el mensaje…';
+}
+</script>
+
+</body>
+</html>
