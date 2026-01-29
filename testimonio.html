@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Testimonio Educiona</title>
+
+<!-- Favicons -->
 <link rel="icon" href="favicon.ico" type="image/x-icon">
-<title>📝 Testimonio Educiona 📝</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <style>
 :root{
@@ -23,7 +28,7 @@
 
 body{
   font-family:'Segoe UI', Arial, sans-serif;
-  background:linear-gradient(135deg,var(--bg1),#fff);
+  background:var(--bg1); /* MODIFICADO: fondo uniforme arriba y abajo */
   padding:32px;
   margin:0;
   color:#1a237e;
@@ -182,15 +187,13 @@ input:focus{
   <div class="preview" id="preview-text">
     Empieza a escribir para ver el mensaje…
   </div>
-
-  <div class="footer">Educiona · Uso interno</div>
 </div>
 
 <!-- BOTÓN VOLVER AL MENÚ -->
 <div style="width:100%; display:flex; justify-content:center; margin-top:32px;">
   <button onclick="window.location.href='index.html'" 
-  style="padding:14px 32px; font-size:1.1rem; font-weight:700; color:white; background:#607d8b; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
-  ← Volver al Menú
+    style="padding:14px 32px; font-size:1.1rem; font-weight:700; color:white; background:#607d8b; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+    ← Volver al Menú
   </button>
 </div>
 
@@ -204,7 +207,7 @@ const btnNo = document.getElementById('btnNo');
 let consentimiento = '';
 
 function setConsentimiento(valor){
-  consentimiento = valor ? '✅ Consentimiento' : '❌ Sin consentimiento';
+  consentimiento = valor ? '✅ Consentimiento ✅' : '❌ Sin consentimiento ❌';
   btnSi.classList.toggle('active', valor);
   btnNo.classList.toggle('active', !valor);
   actualizarPreview();

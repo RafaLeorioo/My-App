@@ -1,285 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Horas</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horario Feria</title>
 
-    <style>
-        :root {
-            --bg1: #e3f2fd;
-            --accent: #1976d2;
-            --card-bg: #fff;
-            --shadow: 0 8px 30px rgba(0,0,0,0.12);
-            --radius: 16px;
-            --maxw: 620px;
-        }
+<!-- Favicons y manifest -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 
-        * { box-sizing: border-box; }
+<!-- Para móviles -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg1), #fff);
-            margin: 0;
-            padding: 20px;
-            color: #1a237e;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+<!-- Android / “Añadir a pantalla de inicio” -->
+<link rel="manifest" href="site.webmanifest">
 
-        .container {
-            width: 100%;
-            max-width: var(--maxw);
-            padding: 28px;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            animation: fadeIn 0.35s ease;
-        }
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: none; }
-        }
+<style>
+:root{
+  --bg1:#e3f2fd;
+  --accent:#1976d2;
+  --card-bg:#fff;
+  --shadow:0 8px 30px rgba(0,0,0,0.12);
+  --maxw:620px;
+}
 
-        h2 {
-            color: var(--accent);
-            margin-bottom: 28px;
-            font-size: 2.3rem;
-            text-align: center;
-            font-weight: 700;
-        }
+*{box-sizing:border-box}
 
-        .bloque {
-            margin-bottom: 22px;
-        }
+body{
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:linear-gradient(135deg,var(--bg1),#fff);
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+  color:#1a237e;
+}
 
-        label {
-            display: block;
-            text-align: center;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #333;
-        }
+.container{
+  background:var(--card-bg);
+  max-width:var(--maxw);
+  width:100%;
+  padding:28px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  animation:fadeIn .36s ease;
+}
 
-        input[type="text"],
-        input[type="time"],
-        select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #cfd8dc;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            text-align: center;
-            background: #fff;
-        }
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(25,118,210,0.12);
-        }
+h2{
+  text-align:center;
+  color:var(--accent);
+  margin-bottom:20px;
+}
 
-        /* Botones inferiores */
-        .botones {
-            margin-top: 30px;
-            text-align: center;
-            width: 100%;
-        }
+.field-group{margin-bottom:16px}
 
-        .btn {
-            display: block;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 14px 36px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #fff;
-            background: var(--accent);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(25,118,210,0.3);
-            transition: all 0.25s;
-        }
+label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  color:#333;
+}
 
-        .btn:hover {
-            background: #1565c0;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(25,118,210,0.4);
-        }
+input, select{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid #cfd8dc;
+  border-radius:10px;
+  font-size:15px;
+}
 
-        .btn-volver {
-            background: #607d8b;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-        }
+input[readonly]{background:#f5fbff}
 
-        .btn-volver:hover {
-            background: #546e7a;
-        }
+input:focus, select:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(25,118,210,0.12);
+}
 
-        /* Preview captura */
-        #previewOverlay {
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            display: none;
-            background: rgba(0,0,0,0.55);
-            padding: 12px;
-            border-radius: 10px;
-            max-width: 95%;
-            max-height: 92%;
-        }
+.btn-principal{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
 
-        #previewBox {
-            background: #fff;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-            max-height: calc(92vh - 40px);
-            overflow: auto;
-        }
+.btn-principal:hover{transform:scale(1.02)}
 
-        #previewBox img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-        }
+.btn-volver{
+  margin-top:40px;
+  padding:14px 32px;
+  font-size:1.2rem;
+  font-weight:bold;
+  color:white;
+  background:#607d8b;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  width:auto;              
+  display:inline-block;    
+}
 
-        #previewActions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .tiny-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .tiny-btn:not(.secondary) {
-            background: linear-gradient(90deg, #6a82ab, #3b3f7a);
-        }
-
-        .tiny-btn.secondary {
-            background: linear-gradient(90deg, #3b7a3b, #6aa86a);
-        }
-
-        @media (max-width: 640px) {
-            body { padding: 16px; }
-            .container { padding: 20px; }
-            h1 { font-size: 1.9rem; }
-            .btn { max-width: 300px; }
-        }
-    </style>
+@media(max-width:640px){
+  body{padding:20px}
+  .container{padding:20px}
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>⏰ Horario Feria ⏰</h2>
+<div class="container" id="captura">
+  <h2>⏰ Horario Feria ⏰</h2>
 
-    <div class="bloque">
-        <label>Inicio de Feria:</label>
-        <input type="time" id="inicioFeria" value="08:00">
-    </div>
+  <div class="field-group">
+    <label>Inicio de feria</label>
+    <input type="time" id="inicio">
+  </div>
 
-    <div class="bloque">
-        <label>Llegada al Colegio:</label>
-        <input type="text" id="llegadaColegio" readonly>
-    </div>
+  <div class="field-group">
+    <label>Llegada al colegio</label>
+    <input type="time" id="llegada" readonly>
+  </div>
 
-    <div class="bloque">
-        <label>T. Trayecto</label>
-        <select id="salirViarTiempo">
-            <option value="5">5 m</option>
-            <option value="10">10 m</option>
-            <option value="15">15 m</option>
-            <option value="20">20 m</option>
-            <option value="30">30 m</option>
-            <option value="45">45 m</option>
-            <option value="60">1 h</option>
-            <option value="90">1 h 30 m</option>
-            <option value="120">2 h</option>
-            <option value="180">3 h</option>
-        </select>
-    </div>
+  <div class="field-group">
+    <label>T. trayecto</label>
+    <select id="trayecto"></select>
+  </div>
 
-    <div class="bloque">
-        <label>Salir de Biar:</label>
-        <input type="text" id="salirViarResultado" readonly>
-    </div>
+  <div class="field-group">
+    <label>Salir de Biar</label>
+    <input type="time" id="salida" readonly>
+  </div>
 
-    <div class="bloque">
-        <label>Me Despierto:</label>
-        <input type="text" id="meDespierto" readonly>
-    </div>
+  <div class="field-group">
+    <label>Me despierto</label>
+    <input type="time" id="despierto" readonly>
+  </div>
 
-    <div class="botones">
-        <button id="btnCaptura" class="btn">Capturar pantalla</button>
-    </div>
-
-    <div class="botones">
-        <button class="btn btn-volver" onclick="window.location.href='index.html'">
-            ← Volver al Menú
-        </button>
-    </div>
+  <button class="btn-principal" onclick="hacerCaptura()">📸 Captura de pantalla 📸</button>
 </div>
 
-<!-- Preview -->
-<div id="previewOverlay">
-    <div id="previewBox">
-        <img id="previewImg">
-        <div id="previewActions">
-            <button id="btnGuardar" class="tiny-btn secondary">Guardar</button>
-            <button id="btnCerrarPreview" class="tiny-btn">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<button class="btn-volver" onclick="window.location.href='index.html'">
+← Volver al Menú
+</button>
 
 <script>
-function calcularHoras() {
-    let inicio = document.getElementById("inicioFeria").value.split(":");
-    let h = parseInt(inicio[0]), m = parseInt(inicio[1]);
+const inicio=document.getElementById("inicio");
+const llegada=document.getElementById("llegada");
+const trayecto=document.getElementById("trayecto");
+const salida=document.getElementById("salida");
+const despierto=document.getElementById("despierto");
 
-    let llegadaH = h - 1;
-    document.getElementById("llegadaColegio").value =
-        (llegadaH < 10 ? "0" : "") + llegadaH + ":" + (m < 10 ? "0" : "") + m;
-
-    let trayecto = parseInt(document.getElementById("salirViarTiempo").value);
-    let totalMin = llegadaH * 60 + m - trayecto;
-
-    let sh = Math.floor(totalMin / 60);
-    let sm = totalMin % 60;
-
-    document.getElementById("salirViarResultado").value =
-        (sh < 10 ? "0" : "") + sh + ":" + (sm < 10 ? "0" : "") + sm;
-
-    let despiertoMin = totalMin - 60;
-    let dh = Math.floor(despiertoMin / 60);
-    let dm = despiertoMin % 60;
-    if (dh < 0) dh += 24;
-
-    document.getElementById("meDespierto").value =
-        (dh < 10 ? "0" : "") + dh + ":" + (dm < 10 ? "0" : "") + dm;
+for(let i=5;i<=180;i+=5){
+  const o=document.createElement("option");
+  o.value=i;
+  o.textContent=i<60?`${i} minutos`:`${Math.floor(i/60)}h ${i%60}m`;
+  trayecto.appendChild(o);
 }
 
-document.getElementById("inicioFeria").addEventListener("change", calcularHoras);
-document.getElementById("salirViarTiempo").addEventListener("change", calcularHoras);
-calcularHoras();
+function restar(h,m){
+  let[hh,mm]=h.split(":").map(Number);
+  let t=hh*60+mm-m;
+  if(t<0)t+=1440;
+  return `${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
+}
+
+function calcular(){
+  if(!inicio.value)return;
+  llegada.value=restar(inicio.value,60);
+  if(trayecto.value){
+    salida.value=restar(llegada.value,parseInt(trayecto.value));
+    despierto.value=restar(salida.value,60);
+  }
+}
+
+inicio.addEventListener("change",calcular);
+trayecto.addEventListener("change",calcular);
+
+function hacerCaptura(){
+  html2canvas(document.getElementById("captura")).then(c=>{
+    const a=document.createElement("a");
+    a.download="horario_feria.png";
+    a.href=c.toDataURL();
+    a.click();
+  });
+}
 </script>
 
 </body>
