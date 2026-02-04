@@ -5,18 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Horario Feria</title>
 
-<!-- Favicons y manifest -->
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-
-<!-- Para móviles -->
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-<!-- Android / “Añadir a pantalla de inicio” -->
 <link rel="manifest" href="site.webmanifest">
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
 :root{
@@ -49,12 +44,6 @@ body{
   padding:28px;
   border-radius:16px;
   box-shadow:var(--shadow);
-  animation:fadeIn .36s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(12px)}
-  to{opacity:1;transform:none}
 }
 
 h2{
@@ -162,44 +151,64 @@ input:focus, select:focus{
 </button>
 
 <script>
-const inicio=document.getElementById("inicio");
-const llegada=document.getElementById("llegada");
-const trayecto=document.getElementById("trayecto");
-const salida=document.getElementById("salida");
-const despierto=document.getElementById("despierto");
+const inicio = document.getElementById("inicio");
+const llegada = document.getElementById("llegada");
+const trayecto = document.getElementById("trayecto");
+const salida = document.getElementById("salida");
+const despierto = document.getElementById("despierto");
 
-for(let i=5;i<=180;i+=5){
-  const o=document.createElement("option");
-  o.value=i;
-  o.textContent=i<60?`${i} minutos`:`${Math.floor(i/60)}h ${i%60}m`;
+for(let i=5; i<=180; i+=5){
+  const o = document.createElement("option");
+  o.value = i;
+  o.textContent = i<60 ? `${i} minutos` : `${Math.floor(i/60)}h ${i%60}m`;
   trayecto.appendChild(o);
 }
 
-function restar(h,m){
-  let[hh,mm]=h.split(":").map(Number);
-  let t=hh*60+mm-m;
-  if(t<0)t+=1440;
+function restar(h, m){
+  let [hh, mm] = h.split(":").map(Number);
+  let t = hh*60 + mm - m;
+  if(t < 0) t += 1440;
   return `${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
 }
 
 function calcular(){
-  if(!inicio.value)return;
-  llegada.value=restar(inicio.value,60);
+  if(!inicio.value) return;
+  llegada.value = restar(inicio.value, 60);
   if(trayecto.value){
-    salida.value=restar(llegada.value,parseInt(trayecto.value));
-    despierto.value=restar(salida.value,60);
+    salida.value = restar(llegada.value, parseInt(trayecto.value));
+    despierto.value = restar(salida.value, 60);
   }
 }
 
-inicio.addEventListener("change",calcular);
-trayecto.addEventListener("change",calcular);
+inicio.addEventListener("change", calcular);
+trayecto.addEventListener("change", calcular);
 
 function hacerCaptura(){
-  html2canvas(document.getElementById("captura")).then(c=>{
-    const a=document.createElement("a");
-    a.download="horario_feria.png";
-    a.href=c.toDataURL();
+  const el = document.getElementById("captura");
+
+  // Forzamos fondo blanco sólido justo antes de capturar
+  const bgOriginal = el.style.background;
+  el.style.background = "#ffffff !important";
+
+  html2canvas(el, {
+    scale: 3,
+    backgroundColor: "#ffffff",
+    useCORS: true,
+    allowTaint: true,
+    logging: false,
+    removeContainer: true,
+    windowWidth: el.scrollWidth,
+    windowHeight: el.scrollHeight
+  }).then(canvas => {
+    el.style.background = bgOriginal;
+
+    const a = document.createElement("a");
+    a.download = "horario_feria.png";
+    a.href = canvas.toDataURL("image/png");
     a.click();
+  }).catch(err => {
+    el.style.background = bgOriginal;
+    console.error("Error en captura:", err);
   });
 }
 </script>
